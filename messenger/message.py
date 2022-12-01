@@ -2,7 +2,7 @@
 # COMPONENT:
 #    MESSAGE
 # Author:
-#    Br. Helfrich, Kyle Mueller, <your name here if you made a change>
+#    Br. Helfrich, Kyle Mueller, Keaton Smith, Jake Rammell
 # Summary: 
 #    This class stores the notion of a message
 ########################################################################
@@ -29,18 +29,20 @@ class Message:
         self._date = ""
         self._id = Message._id_next
         Message._id_next += 1
+        self._control = 0
 
     ##################################################
     # MESSAGE NON-DEFAULT CONSTRUCTOR
     # Create a message and fill it
     ##################################################   
-    def __init__(self, text, author, date):
+    def __init__(self, text, author, date, msg_control):
         self._text = text
         self._author = author
         self._date = date
         self._id = Message._id_next
         Message._id_next += 1
         self._empty = False
+        self._control = msg_control
 
     ##################################################
     # MESSAGE :: GET ID
@@ -48,6 +50,13 @@ class Message:
     ##################################################   
     def get_id(self):
         return self._id
+
+    ##################################################
+    # MESSAGE :: GET CONTROL
+    # Determine the control of this message
+    ################################################## 
+    def get_control(self):
+        return self._control
 
     ##################################################
     # MESSAGE :: DISPLAY PROPERTIES

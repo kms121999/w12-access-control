@@ -2,7 +2,7 @@
 # COMPONENT:
 #    INTERACT
 # Author:
-#    Br. Helfrich, Kyle Mueller, <your name here if you made a change>
+#    Br. Helfrich, Kyle Mueller, Keaton Smith, Jake Rammell
 # Summary: 
 #    This class allows one user to interact with the system
 ########################################################################
@@ -14,16 +14,18 @@ import messages, control
 # User has a name and a password
 ###############################################################
 class User:
-    def __init__(self, name, password):
+    def __init__(self, name, password, text_control):
         self.name = name
         self.password = password
+        self.control = control.Control[text_control]
+
 
 userlist = [
-   [ "AdmiralAbe",     "password" ],  
-   [ "CaptainCharlie", "password" ], 
-   [ "SeamanSam",      "password" ],
-   [ "SeamanSue",      "password" ],
-   [ "SeamanSly",      "password" ]
+   [ "AdmiralAbe",     "password", "Secret" ],  
+   [ "CaptainCharlie", "password", "Privileged" ], 
+   [ "SeamanSam",      "password", "Confidential" ],
+   [ "SeamanSue",      "password", "Confidential" ],
+   [ "SeamanSly",      "password", "Confidential" ]
 ]
 
 ###############################################################
@@ -45,7 +47,11 @@ class Interact:
     # Authenticate the user and get him/her all set up
     ##################################################
     def __init__(self, username, password, messages):
-        self._authenticate(username, password)
+        self._control = 0
+
+        if self._authenticate(username, password):
+            self._control = users[self._id_from_user(username)].control
+
         self._username = username
         self._p_messages = messages
 
@@ -55,7 +61,7 @@ class Interact:
     ##################################################
     def show(self):
         id_ = self._prompt_for_id("display")
-        if not self._p_messages.show(id_):
+        if not self._p_messages.show(id_, self._control):
             print(f"ERROR! Message ID \'{id_}\' does not exist")
         print()
 
@@ -65,7 +71,7 @@ class Interact:
     ################################################## 
     def display(self):
         print("Messages:")
-        self._p_messages.display()
+        self._p_messages.display(self._control)
         print()
 
     ##################################################
@@ -75,7 +81,8 @@ class Interact:
     def add(self):
         self._p_messages.add(self._prompt_for_line("message"),
                              self._username,
-                             self._prompt_for_line("date"))
+                             self._prompt_for_line("date"),
+                             self._control)
 
     ##################################################
     # INTERACT :: UPDATE
@@ -83,10 +90,10 @@ class Interact:
     ################################################## 
     def update(self):
         id_ = self._prompt_for_id("update")
-        if not self._p_messages.show(id_):
+        if not self._p_messages.show(id_, self._control):
             print(f"ERROR! Message ID \'{id_}\' does not exist\n")
             return
-        self._p_messages.update(id_, self._prompt_for_line("message"))
+        self._p_messages.update(id_, self._prompt_for_line("message"), self._control)
         print()
             
     ##################################################
@@ -94,7 +101,7 @@ class Interact:
     # Remove one message from the list
     ################################################## 
     def remove(self):
-        self._p_messages.remove(self._prompt_for_id("delete"))
+        self._p_messages.remove(self._prompt_for_id("delete"), self._control)
 
     ##################################################
     # INTERACT :: PROMPT FOR LINE
